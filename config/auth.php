@@ -109,3 +109,8 @@ return [
     'password_timeout' => 10800,
 
 ];
+
+Route::middleware('guest')->group(function () {
+    Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
+    Route::utpost('register', [RegisterUseredController::class, 'store']);
+});

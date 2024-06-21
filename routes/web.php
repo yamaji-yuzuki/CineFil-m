@@ -1,21 +1,42 @@
 <?php
 
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\FilmController;
+use App\Http\Controllers\MovieController;
 
-Route::get('/films', [FilmController::class, 'index']);
-Route::get('/films/{id}', [FilmController::class, 'show']);
-Route::post('/films/{id}/like', [FilmController::class, 'like'])->middleware('auth');
-Route::post('/films/{id}/review', [FilmController::class, 'review'])->middleware('auth');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::controller(PostController::class)->middleware(['auth'])->group(function(){
+    Route::get('/', 'index')->name('index');
+    Route::post('/posts', 'store')->name('store');
+    Route::get('/posts/create', 'create')->name('create');
+    Route::get('/posts/{post}', 'show')->name('show');
+    Route::put('/posts/{post}', 'update')->name('update');
+    Route::delete('/posts/{post}', 'delete')->name('delete');
+    Route::get('/posts/{post}/edit', 'edit')->name('edit');
+});
 
 Route::get('/', function () {
     return view('welcome');
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
+
+Auth::routes();
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/categories/{category}', [CategoryController::class,'index'])->middleware("auth");
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -24,6 +45,8 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
-Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('index');
+Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+Route::get('/movies', [MovieController::class, 'index'])->name('movies.index');

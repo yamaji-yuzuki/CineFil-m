@@ -18,10 +18,3 @@ class DashboardController extends Controller
     }
 }
 
-abstract class Controller
-{
-    public function index()
-    {
-        return redirect()->route('index');
-    }
-}
